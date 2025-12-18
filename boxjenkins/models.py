@@ -146,73 +146,77 @@ class BoxJenkinsPandas:
         w_t = self.z - self.mean_z  # Série estacionária centrada
 
         lag_max = min(35, len(w_t) // 2)
-        acf_vals, pacf_vals = self._calcular_acf_pacf(w_t, lag_max)
 
-        # Plotagem estilo statsmodels (4 subplots)
-        fig = plt.figure(figsize=(16, 10))
-        gs = fig.add_gridspec(2, 2, hspace=0.3, wspace=0.3)
+        # Calcular ACF/PACF da série original e diferenciada
+        acf_original, _ = self._calcular_acf_pacf(self.raw_series - self.raw_series.mean(), lag_max)
+        acf_diff, pacf_diff = self._calcular_acf_pacf(w_t, lag_max)
 
-        # 1. Série Original
-        ax1 = fig.add_subplot(gs[0, 0])
-        self.raw_series.plot(ax=ax1, color="steelblue", linewidth=1)
-        ax1.set_title("Série Original", fontsize=12, fontweight="bold")
-        ax1.set_xlabel("")
-        ax1.grid(True, alpha=0.3)
+        # Plotagem estilo statsmodels (2x2 layout)
+        fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+        fig.subplots_adjust(hspace=0.35, wspace=0.25)
 
-        # 2. Série Diferenciada (se d > 0)
-        ax2 = fig.add_subplot(gs[0, 1])
-        if d > 0:
-            self.z.plot(ax=ax2, color="steelblue", linewidth=1)
-            ax2.set_title(f"Série Diferenciada (d={d})", fontsize=12, fontweight="bold")
-        else:
-            self.raw_series.plot(ax=ax2, color="steelblue", linewidth=1)
-            ax2.set_title("Série Original", fontsize=12, fontweight="bold")
-        ax2.set_xlabel("")
-        ax2.grid(True, alpha=0.3)
+        # 1. Série Original (Superior Esquerdo)
+        axes[0, 0].plot(self.raw_series.index, self.raw_series.values, color="#1f77b4", linewidth=1)
+        axes[0, 0].set_title("Série Original", fontsize=11)
+        axes[0, 0].set_xlabel("")
+        axes[0, 0].grid(True, alpha=0.3, linestyle="-", linewidth=0.5)
+        axes[0, 0].spines["top"].set_visible(True)
+        axes[0, 0].spines["right"].set_visible(True)
 
-        # 3. Autocorrelação (ACF)
-        ax3 = fig.add_subplot(gs[1, 0])
-        lags = np.arange(len(acf_vals))
-        conf = 1.96 / np.sqrt(len(w_t))
+        # 2. Autocorrelação Original (Superior Direito)
+        lags = np.arange(len(acf_original))
+        conf = 1.96 / np.sqrt(len(self.raw_series))
 
-        # Plot ACF com barras verticais
-        markerline, stemlines, baseline = ax3.stem(lags, acf_vals, basefmt=" ")
-        plt.setp(stemlines, linewidth=1.5, color="steelblue")
-        plt.setp(markerline, markersize=4, color="steelblue")
+        # Barras verticais
+        for lag, acf_val in zip(lags, acf_original):
+            axes[0, 1].plot([lag, lag], [0, acf_val], color="#1f77b4", linewidth=2)
+            axes[0, 1].plot(lag, acf_val, "o", color="#1f77b4", markersize=5)
 
         # Banda de confiança preenchida
-        ax3.fill_between(lags, conf, -conf, alpha=0.15, color="steelblue")
-        ax3.axhline(0, color="black", linewidth=0.8)
-        ax3.set_title(f"Autocorrelação (Original)", fontsize=12, fontweight="bold")
-        ax3.set_xlabel("Lag")
-        ax3.set_ylabel("ACF")
-        ax3.set_xlim(-1, lag_max + 1)
-        ax3.set_ylim(-1, 1)
-        ax3.grid(True, alpha=0.3)
+        axes[0, 1].fill_between(lags, conf, -conf, alpha=0.25, color="#1f77b4")
+        axes[0, 1].axhline(0, color="black", linewidth=0.8)
+        axes[0, 1].set_title("Autocorrelação (Original)", fontsize=11)
+        axes[0, 1].set_xlabel("")
+        axes[0, 1].set_ylabel("")
+        axes[0, 1].set_xlim(-1, lag_max + 1)
+        axes[0, 1].set_ylim(-1, 1.05)
+        axes[0, 1].grid(True, alpha=0.3, linestyle="-", linewidth=0.5)
+        axes[0, 1].spines["top"].set_visible(True)
+        axes[0, 1].spines["right"].set_visible(True)
 
-        # 4. Autocorrelação Parcial (PACF)
-        ax4 = fig.add_subplot(gs[1, 1])
-
-        # Calcular ACF/PACF da série diferenciada
+        # 3. Série Diferenciada (Inferior Esquerdo)
         if d > 0:
-            acf_diff, pacf_diff = self._calcular_acf_pacf(w_t, lag_max)
+            axes[1, 0].plot(self.z.index, self.z.values, color="#1f77b4", linewidth=1)
+            axes[1, 0].set_title(f"Série Diferenciada (d={d})", fontsize=11)
         else:
-            acf_diff, pacf_diff = acf_vals, pacf_vals
+            axes[1, 0].plot(
+                self.raw_series.index, self.raw_series.values, color="#1f77b4", linewidth=1
+            )
+            axes[1, 0].set_title("Série Original", fontsize=11)
+        axes[1, 0].set_xlabel("")
+        axes[1, 0].grid(True, alpha=0.3, linestyle="-", linewidth=0.5)
+        axes[1, 0].spines["top"].set_visible(True)
+        axes[1, 0].spines["right"].set_visible(True)
 
-        # Plot PACF com barras verticais
-        markerline, stemlines, baseline = ax4.stem(lags, pacf_diff, basefmt=" ")
-        plt.setp(stemlines, linewidth=1.5, color="steelblue")
-        plt.setp(markerline, markersize=4, color="steelblue")
+        # 4. Autocorrelação da série diferenciada (Inferior Direito)
+        conf_diff = 1.96 / np.sqrt(len(w_t))
+
+        # Barras verticais
+        for lag, acf_val in zip(lags, acf_diff):
+            axes[1, 1].plot([lag, lag], [0, acf_val], color="#1f77b4", linewidth=2)
+            axes[1, 1].plot(lag, acf_val, "o", color="#1f77b4", markersize=5)
 
         # Banda de confiança preenchida
-        ax4.fill_between(lags, conf, -conf, alpha=0.15, color="steelblue")
-        ax4.axhline(0, color="black", linewidth=0.8)
-        ax4.set_title(f"Autocorrelação Parcial (d={d})", fontsize=12, fontweight="bold")
-        ax4.set_xlabel("Lag")
-        ax4.set_ylabel("PACF")
-        ax4.set_xlim(-1, lag_max + 1)
-        ax4.set_ylim(-1, 1)
-        ax4.grid(True, alpha=0.3)
+        axes[1, 1].fill_between(lags, conf_diff, -conf_diff, alpha=0.25, color="#1f77b4")
+        axes[1, 1].axhline(0, color="black", linewidth=0.8)
+        axes[1, 1].set_title(f"Autocorrelação (d={d})", fontsize=11)
+        axes[1, 1].set_xlabel("")
+        axes[1, 1].set_ylabel("")
+        axes[1, 1].set_xlim(-1, lag_max + 1)
+        axes[1, 1].set_ylim(-1, 1.05)
+        axes[1, 1].grid(True, alpha=0.3, linestyle="-", linewidth=0.5)
+        axes[1, 1].spines["top"].set_visible(True)
+        axes[1, 1].spines["right"].set_visible(True)
 
         plt.tight_layout()
 
