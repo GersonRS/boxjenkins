@@ -12,7 +12,13 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/GersonRS/boxjenkins",
+    project_urls={
+        "Bug Reports": "https://github.com/GersonRS/boxjenkins/issues",
+        "Source": "https://github.com/GersonRS/boxjenkins",
+        "Documentation": "https://github.com/GersonRS/boxjenkins#readme",
+    },
     packages=find_packages(),
+    include_package_data=True,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
