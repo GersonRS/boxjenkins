@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="boxjenkins",
-    version="0.1.0",
+    version="1.1.0",
     author="Gerson RS",
     author_email="",
     description="Implementação completa do ciclo Box-Jenkins para modelagem ARIMA",
