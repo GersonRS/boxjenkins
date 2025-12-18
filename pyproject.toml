@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "boxjenkins"
-version = "1.1.0"
+version = "1.1.1"
 description = "Implementação completa do ciclo Box-Jenkins para modelagem ARIMA"
 readme = "README.md"
 requires-python = ">=3.8"
