@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "boxjenkins"
-version = "0.1.0"
+version = "1.0.0"
 description = "Implementação completa do ciclo Box-Jenkins para modelagem ARIMA"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -51,9 +51,24 @@ Repository = "https://github.com/GersonRS/boxjenkins"
 [tool.setuptools]
 packages = ["boxjenkins"]
 
+
 [tool.black]
 line-length = 100
 target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # The following are specific to Black, you probably don't want those.
+  tests/ignore
+  | profiling
+  | plugins
+  | data
+  | .astro
+  | .github
+  | htmlcov
+  | dags/modules
+)/
+'''
 
 [tool.isort]
 profile = "black"
