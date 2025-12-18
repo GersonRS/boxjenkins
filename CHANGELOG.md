@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.1](https://github.com/GersonRS/boxjenkins/compare/v1.1.0...v1.1.1) (2025-12-18)
+
+
+### ⚙️ Chores
+
+* Configura release-please para atualizar arquivos de versão ([cf0f1d1](https://github.com/GersonRS/boxjenkins/commit/cf0f1d142ab877b1b3b9ee4214e1ad7bb7775b1e))
+
+
+### ⌨️ Code Refactoring
+
+* remove version.txt ([b380fd7](https://github.com/GersonRS/boxjenkins/commit/b380fd76824190311731fd90af585f37c7aa7663))
+
 ## [1.1.0](https://github.com/GersonRS/boxjenkins/compare/v1.0.0...v1.1.0) (2025-12-18)
 
 
