@@ -75,7 +75,11 @@
       "draft": false,
       "prerelease": false,
       "pull-request-title-pattern": "chore: release ${version}",
-      "release-type": "simple"
+      "release-type": "python",
+      "extra-files": [
+        "boxjenkins/__init__.py",
+        "setup.py"
+      ]
     }
   }
 }
