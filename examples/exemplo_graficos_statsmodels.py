@@ -38,7 +38,7 @@ model = BoxJenkinsPandas(
     dates=dates,
     freq="D",
     run_name="demo_statsmodels_plots",
-    show_plots=False,  # Apenas salvar, não exibir
+    show_plots=True,  # Apenas salvar, não exibir
 )
 
 print("\n📌 Fase 1: IDENTIFICAÇÃO")

@@ -78,7 +78,6 @@ class BoxJenkinsPandas:
     def _calcular_acf_pacf(self, series, max_lag=20):
         """
         Calcula FAC e FACP usando pandas para deslocamento (shift).
-        Fórmulas baseadas nas fontes [4] e [5].
         """
         # Centralizar a série
         mean = series.mean()
@@ -103,7 +102,7 @@ class BoxJenkinsPandas:
 
         acf = np.array(acf)
 
-        # FACP via Durbin-Levinson (Recursivo) - Fonte [6]
+        # FACP via Durbin-Levinson (Recursivo)
         pacf = np.zeros(max_lag + 1)
         pacf[0] = 1.0
 
@@ -126,7 +125,6 @@ class BoxJenkinsPandas:
     def identificacao(self, d=0):
         """
         Aplica diferenciação usando pandas e plota FAC/FACP.
-        Fonte [8]: W_t = (1-B)^d Z_t
         """
         self.d = d
 
@@ -249,7 +247,7 @@ class BoxJenkinsPandas:
         # Loop numérico (mais rápido com numpy puro dentro do loop)
         for t in range(max(p, q), n):
             ar_term = np.dot(phi, w_values[t - p : t][::-1]) if p > 0 else 0
-            # Convenção negativa para theta conforme slides [9] e [10]: (1 - theta*B)
+            # Convenção negativa para theta: (1 - theta*B)
             ma_term = np.dot(theta, a[t - q : t][::-1]) if q > 0 else 0
 
             a[t] = w_values[t] - ar_term + ma_term
@@ -257,7 +255,6 @@ class BoxJenkinsPandas:
         return a
 
     def _funcao_custo(self, params, p, q, w_values):
-        """Soma dos quadrados dos resíduos (Conditional Least Squares) - Fonte [2]"""
         a = self._calcular_residuos_recursivos(params, p, q, w_values)
         return np.sum(a[max(p, q) :] ** 2)
 
@@ -311,14 +308,12 @@ class BoxJenkinsPandas:
     def diagnostico(self):
         """
         Análise de resíduos e Teste Ljung-Box (estilo statsmodels).
-        Fonte [11]: Verifica se os resíduos são ruído branco.
         """
         # Removemos os primeiros resíduos (burn-in)
         valid_res = self.residuals.iloc[max(self.p, self.q) :]
 
         acf_res, _ = self._calcular_acf_pacf(valid_res, max_lag=20)
 
-        # Teste Ljung-Box (Cálculo Manual) - Fonte [12]
         n = len(valid_res)
         q_stat = 0
         lag_max = min(20, n // 2)
@@ -425,7 +420,6 @@ class BoxJenkinsPandas:
     def previsao(self, steps=10):
         """
         Gera previsões futuras.
-        Usa equação de diferenças (Fonte [13]) e integração cumulativa.
         """
         # Histórico (convertido para lista para facilitar append)
         w_hist = list((self.z - self.mean_z).values)
