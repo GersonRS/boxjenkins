@@ -1,3 +1,4 @@
+copilot-instructions.md
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -25,6 +26,11 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+pip-wheel-metadata/
+
+# Build artifacts
+*.whl
+*.tar.gz
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -205,3 +211,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# runs
+runs/
